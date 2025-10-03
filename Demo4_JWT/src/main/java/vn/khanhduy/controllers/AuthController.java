@@ -10,11 +10,11 @@ public class AuthController {
 
     @GetMapping("login")
     public String index() {
-        return "login";   // trả về login.html (templates/login.html)
+        return "login";
     }
 
     @GetMapping("user/profile")
     public String profile() {
-        return "profile"; // trả về profile.html (templates/profile.html)
+        return "profile";
     }
 }
