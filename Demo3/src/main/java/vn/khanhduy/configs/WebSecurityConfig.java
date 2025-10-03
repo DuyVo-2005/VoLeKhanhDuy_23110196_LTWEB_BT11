@@ -18,9 +18,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import jakarta.servlet.FilterChain;
 import vn.khanhduy.services.impl.CustomUserDetailsService;
 import vn.khanhduy.services.impl.UserServiceImpl;
 
@@ -32,28 +32,45 @@ public class WebSecurityConfig {
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
 
-	@Bean
-	public UserDetailsService userDetailsService() {
-		return new UserServiceImpl();
-	}
+	/*
+	 * @Bean public UserDetailsService userDetailsService() { return new
+	 * UserServiceImpl(); }
+	 */
 
+	/*
+	 * @Bean public BCryptPasswordEncoder passwordEncoder() { return new
+	 * BCryptPasswordEncoder(); }
+	 */
+	
 	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
+	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+	/*
+	 * @Bean public DaoAuthenticationProvider daoAuthenticationProvider() {
+	 * DaoAuthenticationProvider daoAuthenticationProvider = new
+	 * DaoAuthenticationProvider();
+	 * daoAuthenticationProvider.setUserDetailsService(userDetailsService());
+	 * daoAuthenticationProvider.setPasswordEncoder(passwordEncoder()); return
+	 * daoAuthenticationProvider; }
+	 */
+	
 	@Bean
 	public DaoAuthenticationProvider daoAuthenticationProvider() {
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-		daoAuthenticationProvider.setUserDetailsService(userDetailsService());
+		daoAuthenticationProvider.setUserDetailsService(userDetailsService);
 		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
 		return daoAuthenticationProvider;
 	}
 
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-	}
-
+	
+	/*
+	 * protected void configure(AuthenticationManagerBuilder auth) throws Exception
+	 * {
+	 * auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder()
+	 * ); }
+	 */
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		final List<GlobalAuthenticationConfigurerAdapter> configurers = new ArrayList<>();
@@ -67,16 +84,39 @@ public class WebSecurityConfig {
 		return authConfig.getAuthenticationManager();
 	}
 
+	/*
+	 * @Bean public SecurityFilterChain filterChain(HttpSecurity http) throws
+	 * Exception { return http.csrf(csrf -> csrf.disable())
+	 * .authorizeHttpRequests((authorize) -> authorize.requestMatchers("/")
+	 * .hasAnyAuthority("USER", "ADMIN", "EDITOR",
+	 * "CREATOR").requestMatchers("/new")
+	 * .hasAnyAuthority("ADMIN/CREATOR").requestMatchers("/edit/**").hasAnyAuthority
+	 * ("ADMIN", "EDITOR") .requestMatchers("/delete/**").hasAnyAuthority("ADMIN")
+	 * .requestMatchers(HttpMethod.GET,
+	 * "/api/**").permitAll().anyRequest().authenticated())
+	 * .httpBasic(Customizer.withDefaults()).formLogin(login ->
+	 * login.loginPage("/login").permitAll()) .logout(logout ->
+	 * logout.permitAll()).exceptionHandling(handling ->
+	 * handling.accessDeniedPage("/403")) .build(); }
+	 */
+	
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests((authorize) -> authorize.requestMatchers("/")
-						.hasAnyAuthority("USER", "ADMIN", "EDITOR", "CREATOR").requestMatchers("/new")
-						.hasAnyAuthority("ADMIN/CREATOR").requestMatchers("/edit/**").hasAnyAuthority("ADMIN", "EDITOR")
-						.requestMatchers("/delete/**").hasAnyAuthority("ADMIN")
-						.requestMatchers(HttpMethod.GET, "/api/**").permitAll().anyRequest().authenticated())
-				.httpBasic(Customizer.withDefaults()).formLogin(login -> login.loginPage("/login").permitAll())
-				.logout(logout -> logout.permitAll()).exceptionHandling(handling -> handling.accessDeniedPage("/403"))
-				.build();
-	}
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                //mở toàn bộ endpoint auth cho signup/signin
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/").hasAnyAuthority("USER", "ADMIN", "EDITOR", "CREATOR")
+                .requestMatchers("/new").hasAnyAuthority("ADMIN", "CREATOR")
+                .requestMatchers("/edit/**").hasAnyAuthority("ADMIN", "EDITOR")
+                .requestMatchers("/delete/**").hasAnyAuthority("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .formLogin(login -> login.loginPage("/login").permitAll())
+            .logout(logout -> logout.permitAll())
+            .exceptionHandling(handling -> handling.accessDeniedPage("/403"))
+            .build();
+    }
 }
