@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          integrity="sha384-rbsA2VBKQ6qn7g9mQIMpA0M6Y9MORt1RWuH61JGLw2JEdK2kad2F9CUG65" 
+          crossorigin="anonymous">
+</head>
+<body>
+<div class="container" style="min-height: 500px">
+    <form method="post">
+        <label>Email</label>
+        <input type="email" name="email" id="email" required="required">
+
+        <label>Password</label>
+        <input type="password" name="password" id="password" required="required" autocomplete="off">
+
+        <button id="Login" type="button">Login</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/Ha+UHV7j/4"
+        crossorigin="anonymous"></script>
+
+<!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
+<!-- custom js -->
+<script src="/js/main.js"></script>
+</body>
+</html>
